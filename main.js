@@ -129,53 +129,80 @@ function removeLocalTodos(todo) {
 }
 
 function editToDo(event) {
-  const item = event.target;
+    const item = event.target;
 
-  if (item.classList[0] === "edit-btn") {
-    const todoDiv = item.parentElement;
-    const todoText = todoDiv.querySelector(".todo-item");
-    const inputField = document.createElement("input");
-    inputField.type = "text";
-    inputField.value = todoText.innerText;
-    inputField.classList.add("todo-input");
+    if (item.classList.contains("edit-btn")) {
+        const todoDiv = item.parentElement;
+        const todoText = todoDiv.querySelector(".todo-item");
 
-    todoDiv.insertBefore(inputField, todoText);
-    todoDiv.removeChild(todoText);
+        const inputField = document.createElement("input");
+        inputField.type = "text";
+        inputField.value = todoText.innerText;
+        inputField.classList.add("todo-input");
 
-    item.innerHTML = '<i class="fas fa-save"></i>';
-    item.classList.remove("edit-btn");
-    item.classList.add("save-btn");
+        todoDiv.insertBefore(inputField, todoText);
+        todoDiv.removeChild(todoText);
 
-    item.addEventListener("click", () => saveEdit(todoDiv, inputField, item));
-  }
+        item.innerHTML = '<i class="fas fa-save"></i>';
+        item.classList.remove("edit-btn");
+        item.classList.add("save-btn");
+
+        item.removeEventListener("click", editToDo);
+        
+        const saveOnEnter = (event) => {
+            if (event.key === "Enter") {
+                saveEdit(todoDiv, inputField, item, todoText.innerText);
+                inputField.removeEventListener("keydown", saveOnEnter);
+            }
+        };
+
+        inputField.addEventListener("keydown", saveOnEnter);
+
+        item.addEventListener("click", function () {
+            saveEdit(todoDiv, inputField, item, todoText.innerText);
+        });
+    }
 }
 
-function saveEdit(todoDiv, inputField, item) {
-  const newTodoText = inputField.value;
+function saveEdit(todoDiv, inputField, item, oldTodoText) {
+    const newTodoText = inputField.value.trim();
 
-  const newToDo = document.createElement("li");
-  newToDo.innerText = newTodoText;
-  newToDo.classList.add("todo-item");
+    if (newTodoText === "") {
+        alert("A tarefa não pode estar vazia!");
+        return;
+    }
 
-  todoDiv.replaceChild(newToDo, inputField);
+    const newToDo = document.createElement("li");
+    newToDo.innerText = newTodoText;
+    newToDo.classList.add("todo-item");
 
-  item.innerHTML = '<i class="fas fa-edit"></i>';
-  item.classList.remove("save-btn");
-  item.classList.add("edit-btn");
+    todoDiv.replaceChild(newToDo, inputField);
 
-  updateLocalTodos(todoDiv, newTodoText);
+    item.innerHTML = '<i class="fas fa-edit"></i>';
+    item.classList.remove("save-btn");
+    item.classList.add("edit-btn");
+
+    item.removeEventListener("click", function () {
+        saveEdit(todoDiv, inputField, item, oldTodoText);
+    });
+    item.addEventListener("click", editToDo);
+
+    updateLocalTodos(oldTodoText, newTodoText);
 }
 
-function updateLocalTodos(todoDiv, newTodoText) {
-  let todos = JSON.parse(localStorage.getItem("todos")) || [];
-  const oldTodoText = todoDiv.querySelector(".todo-item").innerText;
-  const todoIndex = todos.indexOf(oldTodoText);
+function updateLocalTodos(oldTodoText, newTodoText) {
+    let todos = JSON.parse(localStorage.getItem("todos")) || [];
+    
+    const todoIndex = todos.indexOf(oldTodoText);
 
-  if (todoIndex > -1) {
-    todos[todoIndex] = newTodoText;
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }
+    if (todoIndex > -1) {
+        todos[todoIndex] = newTodoText;
+        localStorage.setItem("todos", JSON.stringify(todos));
+    } else {
+        console.error("Tarefa não encontrada no localStorage.");
+    }
 }
+
 
 function changeTheme(color) {
   localStorage.setItem("savedTheme", color);
