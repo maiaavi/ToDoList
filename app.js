@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const mongoose = require('mongoose');
 const redis = require('./redis');
@@ -27,7 +26,7 @@ app.get('/todo/:id', async (req, res) => {
     res.json(todo);
 });
 
-mongoose.connect('mongodb://localhost:27017/seuBanco', {
+mongoose.connect('mongodb+srv://admin:admin@cluster0.yti85.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {

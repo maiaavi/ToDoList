@@ -1,15 +1,13 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/seuBanco', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+const connectDB = async () => {
+    try {
+        await mongoose.connect('mongodb+srv://admin:admin@cluster0.yti85.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
+        console.log('MongoDB conectado com sucesso!');
+    } catch (error) {
+        console.error('Erro em conectar ao MongoDB:', error);
+        process.exit(1);
+    }
+};
 
-const TodoSchema = new mongoose.Schema({
-    text: String,
-    completed: Boolean,
-});
-
-const Todo = mongoose.model('Todo', TodoSchema);
-
-module.exports = Todo;
+module.exports = connectDB;
