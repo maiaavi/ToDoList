@@ -243,6 +243,13 @@ form button {
     list-style: none;
 }
 
+.todo-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .todo {
     margin: 1rem;
     font-size: 19px;
@@ -274,7 +281,7 @@ form button {
     overflow-wrap: anywhere;
 }
 
-.check-btn, .delete-btn {
+.check-btn, .delete-btn, .edit-btn, .save-btn {
     font-size: 19px;
     cursor: pointer;
     width: 2em;
